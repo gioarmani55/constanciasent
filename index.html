@@ -4,11 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<style>
+  .header {
+    display: flex;
+    flex-directon: row;
+    flex-wrap: no-wrap;
+  }
+
+  .header img {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  @media (max-width: 768px) {
+     .header {
+        display: flex;
+        flex-directon: column;
+        flex-wrap: wrap;
+      }
+  }
+</style>
+  
 <header>
   
-    <div style="display: flex;">
-        <img src="logomembrete.png" width="800" height="80" title="logomembrete">
-        <img src="subdirecccion.png" width="1800" height="100"   title="subdirecccion">
+    <div style="display: flex;" class="header">
+        <img src="logomembrete.png" title="logomembrete">
+        <img src="subdirecccion.png" title="subdirecccion">
     </div> 
     <p>" <samp style="color: #e79333;">2025.</samp> Bicentenario de la vida municipal en el Estado de México"</p>
 </header>
@@ -99,7 +120,7 @@ td {
 </div>
 
 <footer>
-    <div class="piepaginagob" align="center"><img src="piepaginagob.png" width="700" height="90" title="piepaginagob"></div>
+    <div class="piepaginagob" align="center"><img src="piepaginagob.png" style="width: 100%; max-width: 100%;" title="piepaginagob"></div>
     <link rel="icon" href="piepaginagob.png" type="image/png">
   <p>© Escuela Normal de Tenancingo | Sistema de Verificación de Constancias</p>
   <div class="escudonormal" align="center"><img src="escudonormal.png" width="100" height="80" title="escudonormal"></div>
@@ -185,4 +206,5 @@ document.getElementById("folioInput").addEventListener("keypress", e => {
 });
 </script>
 </body>
+
 </html>
