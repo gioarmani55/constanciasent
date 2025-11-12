@@ -142,8 +142,8 @@ function excelDateToJSDate(serial) {
   const utc_days = Math.floor(serial - 25569);
   const utc_value = utc_days * 86400;
   const date_info = new Date(utc_value * 1000);
-  const day = String(date_info.getDate()).padStart(2, '0');
-  const month = String(date_info.getMonth() + 1).padStart(2, '0');
+  const day = String(date_info.getDate() + 2).padStart(2, '0');
+  const month = String(date_info.getMonth() + 0).padStart(2, '0');
   const year = date_info.getFullYear();
   return `${day}/${month}/${year}`;
 }
@@ -214,5 +214,6 @@ document.getElementById("folioInput").addEventListener("keypress", e => {
 </body>
 
 </html>
+
 
 
