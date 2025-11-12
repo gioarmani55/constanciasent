@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<header>
+  
+    <div style="display: flex;">
+        <img src="logomembrete.png" width="800" height="80" title="logomembrete">
+        <img src="subdirecccion.png" width="1800" height="100"   title="subdirecccion">
+    </div> 
+    <p>" <samp style="color: #e79333;">2025.</samp> Bicentenario de la vida municipal en el Estado de México"</p>
+</header>
+
+<title>Validación de Constancias ENT</title>
+
+<!-- Librerías -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+
+ p{
+    color: #f4f6f9;
+    text-align: center;
+    text-decoration: solid;
+ }
+body {
+  background: #f4f6f9;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 20px;
+}
+.container {
+  max-width: 700px;
+  background: #fff;
+  margin: auto;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+
+h2 {
+  text-align: center;
+  color: #ac1b08;
+  font-weight: normal;
+  margin-bottom: 20px;
+}
+#result {
+  margin-top: 25px;
+}
+footer {
+  text-align: center;
+  color: #777;
+  font-size: 14px;
+  margin-top: 40px;
+}
+button {
+ background: #ac1b08;
+}
+header{
+    background: rgb(126, 21, 21);
+    box-shadow: 5px 10px rgba(3, 35, 122, 0.1);
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+table, th, tr {
+    border: 3px solid black;
+    border-radius: 5px;
+    border-color: #810404;
+    box-shadow: #048104;
+}
+
+td {
+        border: 1px solid black; /* Añade bordes a las celdas */
+        text-align: center; /* Centrado horizontal */
+        vertical-align: middle; /* Centrado vertical */
+    }
+</style>
+</head>
+
+
+
+<body>
+<div class="container">
+  <h2>ESCUELA NORMAL DE TENANCINGO</h2> 
+  <h2>Validación de Constancia</h2>
+  <p class="text-center text-muted">Ingrese el número de folio de su constancia para verificar su validez.</p>
+  
+  <div class="input-group mb-3">
+    <input type="text" id="folioInput" class="form-control" placeholder="Ejemplo: F001" autofocus>
+    <button style="background: #810404;"id="buscarBtn" class="btn btn-success">Buscar</button>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<footer>
+    <div class="piepaginagob" align="center"><img src="piepaginagob.png" width="700" height="90" title="piepaginagob"></div>
+    <link rel="icon" href="piepaginagob.png" type="image/png">
+  <p>© Escuela Normal de Tenancingo | Sistema de Verificación de Constancias</p>
+  <div class="escudonormal" align="center"><img src="escudonormal.png" width="100" height="80" title="escudonormal"></div>
+  <link rel="icon" href="escudonormal.png" type="image/png">
+</footer>
+
+<script>
+let registros = [];
+
+// 🔹 Función para convertir número de Excel a fecha legible
+function excelDateToJSDate(serial) {
+  if (!serial || isNaN(serial)) return serial; // Si ya es texto, lo deja igual
+  const utc_days = Math.floor(serial - 25569);
+  const utc_value = utc_days * 86400;
+  const date_info = new Date(utc_value * 1000);
+  const day = String(date_info.getDate()).padStart(2, '0');
+  const month = String(date_info.getMonth() + 1).padStart(2, '0');
+  const year = date_info.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+// Cargar el archivo Excel con los datos
+fetch("https://docs.google.com/spreadsheets/d/1Gfc4M7_wdv-0dVuxXHEGDlqi38X5Ev-lvaSoCG5eyIk/export?format=csv")
+  .then(res => res.text())
+  .then(data => {
+    const workbook = XLSX.read(data, { type: "string" });
+    const hoja = workbook.Sheets[workbook.SheetNames[0]];
+    registros = XLSX.utils.sheet_to_json(hoja);
+  })
+  .catch(err => alert("Error al cargar los datos: " + err));
+
+// Función de búsqueda
+function buscarFolio() {
+  const folio = document.getElementById("folioInput").value.trim();
+  const resultDiv = document.getElementById("result");
+
+  if (!folio) {
+    resultDiv.innerHTML = `<div class="alert alert-warning">Por favor, ingrese un número de folio.</div>`;
+    return;
+  }
+
+  const registro = registros.find(r => r.Folio == folio);
+
+  if (!registro) {
+    resultDiv.innerHTML = `
+      <div class="alert alert-danger">
+        ❌ No se encontró ninguna constancia con el folio <strong>${folio}</strong>.
+      </div>`;
+    return;
+  }
+
+  // Mostrar datos encontrados
+  resultDiv.innerHTML = `
+    <div class="alert alert-danger">✅ Constancia con Folio ${registro.Folio} valiadada con la siguiente informacion:</div>
+    <table class="table table-bordered">
+
+      <tr><td style="background: #660033; color: white;" colspan="2">DATOS DEL PARTICIPANTE</td></tr>
+      <tr><th style="background: #e0e0e0;">Folio</th><td style="background: #f8d7da;" >${registro.Folio}</td></tr>
+      <tr><th style="background: #e0e0e0;">Nombre del participante</th><td style="background: #fdecda;">${registro.Nombre}</td></tr>
+      <tr><th style="background: #e0e0e0;">Tipo de participación</th><td style="background: #f8d7da;">${registro.TipoParticipacion}</td></tr>
+      <tr><th style="background: #e0e0e0;">Valor curricular</th><td style="background: #fdecda;">${registro.ValorCurricular}</td></tr>
+      <tr><td style="background: #660033; color: white;" colspan="2">DATOS DEL EVENTO</td></tr>
+      <tr><th style="background: #e0e0e0;">Tipo de evento</th><td style="background: #f8d7da;">${registro.TipoEvento}</td></tr>
+      <tr><th style="background: #e0e0e0;">Nombre del evento</th><td style="background: #fdecda;">${registro.NombreEvento}</td></tr>
+      <tr><th style="background: #e0e0e0;">Fecha del evento</th><td style="background: #f8d7da;">${excelDateToJSDate(registro.FechaEvento)}</td></tr>
+      <tr><th style="background: #e0e0e0;">Lugar</th><td style="background: #fdecda;">${registro.Lugar}</td></tr>
+      <tr><th style="background: #e0e0e0;">Fecha de expedición</th><td style="background: #f8d7da;">${excelDateToJSDate(registro.FechaExpedicion)}</td></tr>
+      <tr><td style="background: #660033; color: white;" colspan="2">DATOS DE QUIEN VALIDA LA CONSTANCIA</td></tr>
+      <tr><th style="background: #e0e0e0;">Nombre</th><td style="background: #fdecda;">${registro.DatosValida}</td></tr>
+      <tr><th style="background: #e0e0e0;">Función que ejerce</th><td style="background: #fdecda;">${registro.FuncionEjercida}</td></tr>
+      
+    </table>
+    
+  `;
+}
+
+// Botón de búsqueda
+document.getElementById("buscarBtn").addEventListener("click", buscarFolio);
+
+// Permitir buscar al presionar Enter
+document.getElementById("folioInput").addEventListener("keypress", e => {
+  if (e.key === "Enter") buscarFolio();
+});
+</script>
+</body>
+</html>
